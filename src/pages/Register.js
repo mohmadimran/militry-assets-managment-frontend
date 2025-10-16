@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../api/Api";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -16,19 +17,12 @@ const Register = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3001/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      setMessage(data.message || "Registration successful!");
+      const res = await registerUser(formData);
+      setMessage(res.data.message || "Registration successful!");
       navigate("/login");
     } catch (error) {
       setMessage("Error during registration");
@@ -42,8 +36,12 @@ const Register = () => {
           <div className="card shadow border-0">
             <div className="card-body p-4">
               <div className="text-center mb-3">
-                <h3 className="card-title fw-bold text-dark mb-1">Create Account</h3>
-                <p className="text-muted small">Register for Military Asset System</p>
+                <h3 className="card-title fw-bold text-dark mb-1">
+                  Create Account
+                </h3>
+                <p className="text-muted small">
+                  Register for Military Asset System
+                </p>
               </div>
 
               <form onSubmit={handleSubmit}>
@@ -80,7 +78,10 @@ const Register = () => {
                 </div>
 
                 <div className="mb-2">
-                  <label htmlFor="password" className="form-label fw-medium small">
+                  <label
+                    htmlFor="password"
+                    className="form-label fw-medium small"
+                  >
                     Password
                   </label>
                   <input
@@ -118,7 +119,10 @@ const Register = () => {
                   (formData.role === "Base Commander" ||
                     formData.role === "Logistics Officer") && (
                     <div className="mb-3">
-                      <label htmlFor="base" className="form-label fw-medium small">
+                      <label
+                        htmlFor="base"
+                        className="form-label fw-medium small"
+                      >
                         Base Assignment
                       </label>
                       <select
@@ -146,12 +150,12 @@ const Register = () => {
                 </button>
 
                 {message && (
-                  <div 
+                  <div
                     className={`alert ${
-                      message.includes("Error") 
-                        ? "alert-danger" 
+                      message.includes("Error")
+                        ? "alert-danger"
                         : "alert-success"
-                    } text-center mt-3 mb-0 small`} 
+                    } text-center mt-3 mb-0 small`}
                     role="alert"
                   >
                     {message}

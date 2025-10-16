@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveAuth } from "../utils/auth";
+import { loginUser } from "../api/Api";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -13,17 +14,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
+      const res = await loginUser(formData); 
+      const data = res.data; 
 
-      if (res.ok && data.token) {
-        console.log("token and role", data.role);
+      if (data.token) {
+        console.log("token and role:", data.role);
         saveAuth(data.token, data.role);
-
         if (data.role === "Admin") navigate("/admin");
         else if (data.role === "Base Commander") navigate("/commander");
         else navigate("/logistics");
@@ -31,7 +27,8 @@ const Login = () => {
         setMessage(data.message || "Login failed");
       }
     } catch (error) {
-      setMessage("Error logging in");
+      console.error(error);
+      setMessage(error.response?.data?.message || "Error logging in");
     }
   };
 
