@@ -9,7 +9,7 @@ const HeroSection = () => {
           <div className="col-12 text-center">
             {/* Main Heading */}
             <h1 className="display-3 fw-bold mb-4">
-              Welcome to Military Asset Management System
+              Welcome to Military Assets Management System
             </h1>
             
             {/* Subheading */}
