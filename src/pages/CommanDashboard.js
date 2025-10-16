@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { commonDashbordApi } from "../api/Api";
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -12,41 +13,33 @@ const Dashboard = () => {
     to: ""
   });
 
-  // Available options for dropdowns
+  //  options for dropdowns
   const baseOptions = ["Base A", "Base B", "Base C", "Headquarters"];
   const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
 
   const fetchDashboardData = async (filterParams = {}) => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
+    const queryParams = new URLSearchParams();
+    Object.keys(filterParams).forEach((key) => {
+      if (filterParams[key]) queryParams.append(key, filterParams[key]);
+    });
 
-      const queryParams = new URLSearchParams();
-      Object.keys(filterParams).forEach(key => {
-        if (filterParams[key]) {
-          queryParams.append(key, filterParams[key]);
-        }
-      });
+    const res = await commonDashbordApi.get(
+      `/dashboard${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
+    );
 
-      const url = `https://militry-assets-managment.onrender.com/api/dashboard${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch dashboard data");
-
-      const data = await response.json();
-      setDashboardData(data);
-      setError("");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setDashboardData(res.data);
+    setError("");
+  } catch (err) {
+    console.error(err);
+    setError(
+      err.response?.data?.message || "Failed to fetch dashboard data"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchDashboardData();
