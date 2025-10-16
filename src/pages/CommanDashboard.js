@@ -27,7 +27,7 @@ const Dashboard = () => {
         }
       });
 
-      const url = `http://localhost:3001/api/dashboard${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `https://militry-assets-managment.onrender.com/api/dashboard${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
       const response = await fetch(url, {
         method: "GET",
