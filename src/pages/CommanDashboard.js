@@ -24,7 +24,6 @@ const fetchDashboardData = async (filterParams = {}) => {
     setDashboardData(res.data);
     setError("");
   } catch (err) {
-    console.error("Dashboard Fetch Error:", err);
     setError(err.response?.data?.message || "Failed to fetch dashboard data");
   } finally {
     setLoading(false);

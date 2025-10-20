@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { transferItems } from "../api/Api";
 
 const TransfersPage = () => {
   const [transfers, setTransfers] = useState([]);
@@ -10,9 +11,8 @@ const TransfersPage = () => {
     equipmentType: ""
   });
 
-  const token = localStorage.getItem("token");
-  const baseOptions = ["All Bases", "Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["All Types", "Rifle", "Vehicles", "Ammunition", "Communication", "Protective Gear"];
+  const baseOptions = ["Base A", "Base B", "Base C", "Headquarters"];
+  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
 
   useEffect(() => {
     fetchTransfers();
@@ -21,27 +21,8 @@ const TransfersPage = () => {
   const fetchTransfers = async (filterParams = {}) => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      Object.keys(filterParams).forEach(key => {
-        if (filterParams[key]) {
-          queryParams.append(key, filterParams[key]);
-        }
-      });
-
-      const url = `http://localhost:3001/api/transfers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch transfers");
-      
-      const data = await response.json();
-      setTransfers(data);
+     const response = await transferItems(filterParams)
+      setTransfers(response.data);
     } catch (err) {
       setError(err.message);
     } finally {

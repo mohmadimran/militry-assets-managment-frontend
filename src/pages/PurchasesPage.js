@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { purchaseItem } from "../api/Api";
 
 const PurchasesPage = () => {
   const [purchases, setPurchases] = useState([]);
@@ -8,41 +9,23 @@ const PurchasesPage = () => {
     base: "",
     equipmentType: "",
     dateFrom: "",
-    dateTo: ""
+    dateTo: "",
   });
 
-  const token = localStorage.getItem("token");
-  const baseOptions = ["All Bases", "Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["All Types", "Rifle", "Vehicles", "Ammunition", "Communication", "Protective Gear"];
+  const baseOptions = [
+    "Base A",
+    "Base B",
+    "Base C",
+    "Headquarters",
+  ];
+  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
 
-  useEffect(() => {
-    fetchPurchases();
-  }, []);
-
+  
   const fetchPurchases = async (filterParams = {}) => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      Object.keys(filterParams).forEach(key => {
-        if (filterParams[key]) {
-          queryParams.append(key, filterParams[key]);
-        }
-      });
-
-      const url = `http://localhost:3001/api/purchases${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch purchases");
-      
-      const data = await response.json();
-      setPurchases(data);
+      const response = await purchaseItem(filterParams);
+      setPurchases(response.data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -50,9 +33,13 @@ const PurchasesPage = () => {
     }
   };
 
+  useEffect(() => {
+    fetchPurchases();
+  }, []);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleApplyFilters = () => {
@@ -60,30 +47,37 @@ const PurchasesPage = () => {
   };
 
   const handleResetFilters = () => {
-    const resetFilters = { base: "", equipmentType: "", dateFrom: "", dateTo: "" };
+    const resetFilters = {
+      base: "",
+      equipmentType: "",
+      dateFrom: "",
+      dateTo: "",
+    };
     setFilters(resetFilters);
     fetchPurchases();
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-IN');
+    return new Date(dateString).toLocaleDateString("en-IN");
   };
 
-  if (loading) return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+  if (loading)
+    return (
+      <div className="container mt-4">
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 
-  if (error) return (
-    <div className="container mt-4">
-      <div className="alert alert-danger">Error: {error}</div>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="container mt-4">
+        <div className="alert alert-danger">Error: {error}</div>
+      </div>
+    );
 
   return (
     <div className="container mt-4">
@@ -94,7 +88,7 @@ const PurchasesPage = () => {
             Purchase History
           </h4>
         </div>
-        
+
         <div className="card-body">
           {/* Filters */}
           <div className="card mb-4">
@@ -105,62 +99,72 @@ const PurchasesPage = () => {
               <div className="row g-3">
                 <div className="col-md-3">
                   <label className="form-label">Base</label>
-                  <select 
-                    className="form-select" 
+                  <select
+                    className="form-select"
                     name="base"
                     value={filters.base}
                     onChange={handleFilterChange}
                   >
                     <option value="">All Bases</option>
-                    {baseOptions.map(base => (
-                      <option key={base} value={base}>{base}</option>
+                    {baseOptions.map((base) => (
+                      <option key={base} value={base}>
+                        {base}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="col-md-3">
                   <label className="form-label">Equipment Type</label>
-                  <select 
-                    className="form-select" 
+                  <select
+                    className="form-select"
                     name="equipmentType"
                     value={filters.equipmentType}
                     onChange={handleFilterChange}
                   >
                     <option value="">All Types</option>
-                    {equipmentOptions.map(equipment => (
-                      <option key={equipment} value={equipment}>{equipment}</option>
+                    {equipmentOptions.map((equipment) => (
+                      <option key={equipment} value={equipment}>
+                        {equipment}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="col-md-2">
                   <label className="form-label">From Date</label>
-                  <input 
-                    type="date" 
-                    className="form-control" 
+                  <input
+                    type="date"
+                    className="form-control"
                     name="dateFrom"
                     value={filters.dateFrom}
                     onChange={handleFilterChange}
                   />
                 </div>
-                
+
                 <div className="col-md-2">
                   <label className="form-label">To Date</label>
-                  <input 
-                    type="date" 
-                    className="form-control" 
+                  <input
+                    type="date"
+                    className="form-control"
                     name="dateTo"
                     value={filters.dateTo}
                     onChange={handleFilterChange}
                   />
                 </div>
-                
+
                 <div className="col-md-2 d-flex align-items-end">
                   <div className="d-grid gap-2 d-md-flex">
-                    <button className="btn btn-primary flex-fill" onClick={handleApplyFilters}>
+                    <button
+                      className="btn btn-primary flex-fill"
+                      onClick={handleApplyFilters}
+                    >
                       Apply
                     </button>
-                    <button className="btn btn-outline-secondary" onClick={handleResetFilters}>
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={handleResetFilters}
+                    >
                       Reset
                     </button>
                   </div>
@@ -187,13 +191,19 @@ const PurchasesPage = () => {
                     <tr key={purchase._id}>
                       <td>{formatDate(purchase.date)}</td>
                       <td>
-                        <span className="badge bg-primary">{purchase.base}</span>
+                        <span className="badge bg-primary">
+                          {purchase.base}
+                        </span>
                       </td>
                       <td>
-                        <span className="badge bg-info text-dark">{purchase.equipmentType}</span>
+                        <span className="badge bg-info text-dark">
+                          {purchase.equipmentType}
+                        </span>
                       </td>
                       <td>
-                        <span className="fw-bold text-success">+{purchase.quantity}</span>
+                        <span className="fw-bold text-success">
+                          +{purchase.quantity}
+                        </span>
                       </td>
                       <td>
                         <small className="text-muted">{purchase._id}</small>
@@ -219,10 +229,12 @@ const PurchasesPage = () => {
                   <strong>Total Records:</strong> {purchases.length}
                 </div>
                 <div className="col-md-4">
-                  <strong>Total Quantity:</strong> {purchases.reduce((sum, item) => sum + item.quantity, 0)}
+                  <strong>Total Quantity:</strong>{" "}
+                  {purchases.reduce((sum, item) => sum + item.quantity, 0)}
                 </div>
                 <div className="col-md-4">
-                  <strong>Last Updated:</strong> {formatDate(purchases[0]?.date)}
+                  <strong>Last Updated:</strong>{" "}
+                  {formatDate(purchases[0]?.date)}
                 </div>
               </div>
             </div>

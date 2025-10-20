@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { expendituresItems } from "../api/Api";
 
 const ExpendituresPage = () => {
   const [expenditures, setExpenditures] = useState([]);
@@ -10,9 +11,8 @@ const ExpendituresPage = () => {
     reason: ""
   });
 
-  const token = localStorage.getItem("token");
-  const baseOptions = ["All Bases", "Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["All Types", "Rifle", "Vehicles", "Ammunition", "Communication", "Protective Gear"];
+  const baseOptions = [ "Base A", "Base B", "Base C", "Headquarters"];
+  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
 
   useEffect(() => {
     fetchExpenditures();
@@ -21,27 +21,8 @@ const ExpendituresPage = () => {
   const fetchExpenditures = async (filterParams = {}) => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      Object.keys(filterParams).forEach(key => {
-        if (filterParams[key]) {
-          queryParams.append(key, filterParams[key]);
-        }
-      });
-
-      const url = `http://localhost:3001/api/expenditures${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch expenditures");
-      
-      const data = await response.json();
-      setExpenditures(data);
+     const response = await expendituresItems(filterParams)
+      setExpenditures(response.data);
     } catch (err) {
       setError(err.message);
     } finally {

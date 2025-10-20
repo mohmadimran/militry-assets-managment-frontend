@@ -16,10 +16,15 @@ API.interceptors.request.use(
 );
 
 // Auth
-export const registerUser = (userData) => API.post('/auth/register', userData);
-export const loginUser = (userData) => API.post('/auth/login', userData);
+export const registerUser = (userData) => API.post('/api/auth/register', userData);
+export const loginUser = (userData) => API.post('/api/auth/login', userData);
 
 // Employee
 export const commonDashbordApi = (params) => API.get('/api/dashboard', { params });
+
+export const purchaseItem = (params)=> API.get("/api/purchases",{params});
+export const transferItems = (params)=> API.get("/api/transfers",{params})
+export const assignedItems = (params)=> API.get("/api/assignments",{params})
+export const expendituresItems = (params)=> API.get("/api/expenditures",{params})
 
 export default API;
