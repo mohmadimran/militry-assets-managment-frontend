@@ -14,10 +14,6 @@ import AssignmentsPage from "./pages/AssignmentsPage";
 import ExpendituresPage from "./pages/ExpendituresPage";
 import AdminDashboard from "./pages/AdminDashboard"; 
 
-// export const config = {
-//   endpoint: `https://qkart-backend-aac4.onrender.com/v1`,
-// };
-
 function App() {
   return (
     <BrowserRouter>

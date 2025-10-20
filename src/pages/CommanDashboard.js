@@ -16,26 +16,16 @@ const Dashboard = () => {
   //  options for dropdowns
   const baseOptions = ["Base A", "Base B", "Base C", "Headquarters"];
   const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
-
-  const fetchDashboardData = async (filterParams = {}) => {
+const fetchDashboardData = async (filterParams = {}) => {
   try {
     setLoading(true);
-    const queryParams = new URLSearchParams();
-    Object.keys(filterParams).forEach((key) => {
-      if (filterParams[key]) queryParams.append(key, filterParams[key]);
-    });
-
-    const res = await commonDashbordApi.get(
-      `/dashboard${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
-    );
+    const res = await commonDashbordApi(filterParams);
 
     setDashboardData(res.data);
     setError("");
   } catch (err) {
-    console.error(err);
-    setError(
-      err.response?.data?.message || "Failed to fetch dashboard data"
-    );
+    console.error("Dashboard Fetch Error:", err);
+    setError(err.response?.data?.message || "Failed to fetch dashboard data");
   } finally {
     setLoading(false);
   }
