@@ -1,85 +1,60 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState } from "react";
+import {
+  createAssignment,
+  createPurchase,
+  createTransfer,
+  createExpendature,
+} from "../api/Api";
+import {baseOptions,equipmentOptions} from "../constant/Options"
 const LogisticsOfficer = () => {
   const [activeTab, setActiveTab] = useState("purchase");
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // success, danger, info
   const [loading, setLoading] = useState(false);
 
   // Form states for different operations
   const [purchaseForm, setPurchaseForm] = useState({
     base: "",
     equipmentType: "",
-    quantity: ""
+    quantity: "",
   });
 
   const [transferForm, setTransferForm] = useState({
     fromBase: "",
     toBase: "",
     equipmentType: "",
-    quantity: ""
+    quantity: "",
   });
 
   const [assignmentForm, setAssignmentForm] = useState({
     base: "",
     equipmentType: "",
     quantity: "",
-    assignedTo: ""
+    assignedTo: "",
   });
 
   const [expenditureForm, setExpenditureForm] = useState({
     base: "",
     equipmentType: "",
     quantity: "",
-    reason: ""
+    reason: "",
   });
-
-  const token = localStorage.getItem("token");
-
-  // Available options
-  const baseOptions = ["Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition", "Communication", "Protective Gear"];
-
-  const showMessage = (msg, type = "info") => {
-    setMessage(msg);
-    setMessageType(type);
-    setTimeout(() => setMessage(""), 5000);
-  };
 
   // Purchase Functions
   const handlePurchaseChange = (e) => {
     const { name, value } = e.target;
-    setPurchaseForm(prev => ({ ...prev, [name]: value }));
+    setPurchaseForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // create purchase
   const handlePurchaseSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      const response = await fetch("http://localhost:3001/api/purchases", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          base: purchaseForm.base,
-          equipmentType: purchaseForm.equipmentType,
-          quantity: parseInt(purchaseForm.quantity)
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        showMessage("Purchase created successfully!", "success");
-        setPurchaseForm({ base: "", equipmentType: "", quantity: "" });
-      } else {
-        showMessage(data.message || "Failed to create purchase", "danger");
-      }
+      setLoading(true);
+      const response = await createPurchase(purchaseForm);
+      setMessage(response.data.message || "purchase created!");
+      setPurchaseForm({ base: "", equipmentType: "", quantity: "" });
     } catch (error) {
-      showMessage("Error creating purchase", "danger");
+      setMessage("Error creating purchase", "danger");
     } finally {
       setLoading(false);
     }
@@ -88,38 +63,24 @@ const LogisticsOfficer = () => {
   // Transfer Functions
   const handleTransferChange = (e) => {
     const { name, value } = e.target;
-    setTransferForm(prev => ({ ...prev, [name]: value }));
+    setTransferForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTransferSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/api/transfers", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          fromBase: transferForm.fromBase,
-          toBase: transferForm.toBase,
-          equipmentType: transferForm.equipmentType,
-          quantity: parseInt(transferForm.quantity)
-        })
+      setLoading(true);
+      const response = await createTransfer(transferForm);
+      setMessage(response.data.message || "transfer sucessfull");
+      setTransferForm({
+        fromBase: "",
+        toBase: "",
+        equipmentType: "",
+        quantity: "",
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        showMessage("Transfer created successfully!", "success");
-        setTransferForm({ fromBase: "", toBase: "", equipmentType: "", quantity: "" });
-      } else {
-        showMessage(data.message || "Failed to create transfer", "danger");
-      }
     } catch (error) {
-      showMessage("Error creating transfer", "danger");
+      setMessage("Error creating transfer", "danger");
     } finally {
       setLoading(false);
     }
@@ -128,38 +89,25 @@ const LogisticsOfficer = () => {
   // Assignment Functions
   const handleAssignmentChange = (e) => {
     const { name, value } = e.target;
-    setAssignmentForm(prev => ({ ...prev, [name]: value }));
+    setAssignmentForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAssignmentSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/api/assignments", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          base: assignmentForm.base,
-          equipmentType: assignmentForm.equipmentType,
-          quantity: parseInt(assignmentForm.quantity),
-          assignedTo: assignmentForm.assignedTo
-        })
+      setLoading(true);
+
+      const response = await createAssignment(assignmentForm);
+      setMessage(response.data.message || "assigment is created sucessfully");
+      setAssignmentForm({
+        base: "",
+        equipmentType: "",
+        quantity: "",
+        assignedTo: "",
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        showMessage("Assignment created successfully!", "success");
-        setAssignmentForm({ base: "", equipmentType: "", quantity: "", assignedTo: "" });
-      } else {
-        showMessage(data.message || "Failed to create assignment", "danger");
-      }
     } catch (error) {
-      showMessage("Error creating assignment", "danger");
+      setMessage("Error creating assignment", "danger");
     } finally {
       setLoading(false);
     }
@@ -168,38 +116,24 @@ const LogisticsOfficer = () => {
   // Expenditure Functions
   const handleExpenditureChange = (e) => {
     const { name, value } = e.target;
-    setExpenditureForm(prev => ({ ...prev, [name]: value }));
+    setExpenditureForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleExpenditureSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/api/expenditures", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          base: expenditureForm.base,
-          equipmentType: expenditureForm.equipmentType,
-          quantity: parseInt(expenditureForm.quantity),
-          reason: expenditureForm.reason
-        })
+      setLoading(true);
+      const response = await createExpendature(expenditureForm);
+      setMessage(response.data.message || "expendature created");
+      setExpenditureForm({
+        base: "",
+        equipmentType: "",
+        quantity: "",
+        reason: "",
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        showMessage("Expenditure recorded successfully!", "success");
-        setExpenditureForm({ base: "", equipmentType: "", quantity: "", reason: "" });
-      } else {
-        showMessage(data.message || "Failed to record expenditure", "danger");
-      }
     } catch (error) {
-      showMessage("Error recording expenditure", "danger");
+      setMessage("Error recording expenditure", "danger");
     } finally {
       setLoading(false);
     }
@@ -218,41 +152,51 @@ const LogisticsOfficer = () => {
         <div className="card-body">
           {/* Message Alert */}
           {message && (
-            <div className={`alert alert-${messageType} alert-dismissible fade show`} role="alert">
+            <div
+              className="alert  alert-dismissible fade show"
+            >
               {message}
-              <button type="button" className="btn-close" onClick={() => setMessage("")}></button>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setMessage("")}
+              ></button>
             </div>
           )}
 
           {/* Navigation Tabs */}
           <ul className="nav nav-tabs mb-4">
             <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === "purchase" ? "active" : ""}`}
+              <button
+                className={`nav-link ${activeTab === "purchase" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("purchase")}
               >
                 🛒 Create Purchase
               </button>
             </li>
             <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === "transfer" ? "active" : ""}`}
+              <button
+                className={`nav-link ${activeTab === "transfer" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("transfer")}
               >
                 🔁 Create Transfer
               </button>
             </li>
             <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === "assignment" ? "active" : ""}`}
+              <button
+                className={`nav-link ${activeTab === "assignment" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("assignment")}
               >
                 🎯 Create Assignment
               </button>
             </li>
             <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === "expenditure" ? "active" : ""}`}
+              <button
+                className={`nav-link ${activeTab === "expenditure" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("expenditure")}
               >
                 💣 Record Expenditure
@@ -270,9 +214,11 @@ const LogisticsOfficer = () => {
                 <form onSubmit={handlePurchaseSubmit}>
                   <div className="row g-3">
                     <div className="col-md-4">
-                      <label htmlFor="purchaseBase" className="form-label">Base</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="purchaseBase" className="form-label">
+                        Base
+                      </label>
+                      <select
+                        className="form-select"
                         id="purchaseBase"
                         name="base"
                         value={purchaseForm.base}
@@ -280,16 +226,20 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Base</option>
-                        {baseOptions.map(base => (
-                          <option key={base} value={base}>{base}</option>
+                        {baseOptions.map((base) => (
+                          <option key={base} value={base}>
+                            {base}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-4">
-                      <label htmlFor="purchaseEquipment" className="form-label">Equipment Type</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="purchaseEquipment" className="form-label">
+                        Equipment Type
+                      </label>
+                      <select
+                        className="form-select"
                         id="purchaseEquipment"
                         name="equipmentType"
                         value={purchaseForm.equipmentType}
@@ -297,17 +247,21 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Equipment</option>
-                        {equipmentOptions.map(equipment => (
-                          <option key={equipment} value={equipment}>{equipment}</option>
+                        {equipmentOptions.map((equipment) => (
+                          <option key={equipment} value={equipment}>
+                            {equipment}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-4">
-                      <label htmlFor="purchaseQuantity" className="form-label">Quantity</label>
-                      <input 
-                        type="number" 
-                        className="form-control" 
+                      <label htmlFor="purchaseQuantity" className="form-label">
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
                         id="purchaseQuantity"
                         name="quantity"
                         value={purchaseForm.quantity}
@@ -317,10 +271,10 @@ const LogisticsOfficer = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-3">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="btn btn-primary"
                       disabled={loading}
                     >
@@ -342,9 +296,11 @@ const LogisticsOfficer = () => {
                 <form onSubmit={handleTransferSubmit}>
                   <div className="row g-3">
                     <div className="col-md-3">
-                      <label htmlFor="fromBase" className="form-label">From Base</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="fromBase" className="form-label">
+                        From Base
+                      </label>
+                      <select
+                        className="form-select"
                         id="fromBase"
                         name="fromBase"
                         value={transferForm.fromBase}
@@ -352,16 +308,20 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Source Base</option>
-                        {baseOptions.map(base => (
-                          <option key={base} value={base}>{base}</option>
+                        {baseOptions.map((base) => (
+                          <option key={base} value={base}>
+                            {base}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="toBase" className="form-label">To Base</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="toBase" className="form-label">
+                        To Base
+                      </label>
+                      <select
+                        className="form-select"
                         id="toBase"
                         name="toBase"
                         value={transferForm.toBase}
@@ -369,16 +329,20 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Destination Base</option>
-                        {baseOptions.map(base => (
-                          <option key={base} value={base}>{base}</option>
+                        {baseOptions.map((base) => (
+                          <option key={base} value={base}>
+                            {base}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="transferEquipment" className="form-label">Equipment Type</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="transferEquipment" className="form-label">
+                        Equipment Type
+                      </label>
+                      <select
+                        className="form-select"
                         id="transferEquipment"
                         name="equipmentType"
                         value={transferForm.equipmentType}
@@ -386,17 +350,21 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Equipment</option>
-                        {equipmentOptions.map(equipment => (
-                          <option key={equipment} value={equipment}>{equipment}</option>
+                        {equipmentOptions.map((equipment) => (
+                          <option key={equipment} value={equipment}>
+                            {equipment}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="transferQuantity" className="form-label">Quantity</label>
-                      <input 
-                        type="number" 
-                        className="form-control" 
+                      <label htmlFor="transferQuantity" className="form-label">
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
                         id="transferQuantity"
                         name="quantity"
                         value={transferForm.quantity}
@@ -406,10 +374,10 @@ const LogisticsOfficer = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-3">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="btn btn-info text-white"
                       disabled={loading}
                     >
@@ -431,9 +399,11 @@ const LogisticsOfficer = () => {
                 <form onSubmit={handleAssignmentSubmit}>
                   <div className="row g-3">
                     <div className="col-md-3">
-                      <label htmlFor="assignmentBase" className="form-label">Base</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="assignmentBase" className="form-label">
+                        Base
+                      </label>
+                      <select
+                        className="form-select"
                         id="assignmentBase"
                         name="base"
                         value={assignmentForm.base}
@@ -441,16 +411,23 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Base</option>
-                        {baseOptions.map(base => (
-                          <option key={base} value={base}>{base}</option>
+                        {baseOptions.map((base) => (
+                          <option key={base} value={base}>
+                            {base}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="assignmentEquipment" className="form-label">Equipment Type</label>
-                      <select 
-                        className="form-select" 
+                      <label
+                        htmlFor="assignmentEquipment"
+                        className="form-label"
+                      >
+                        Equipment Type
+                      </label>
+                      <select
+                        className="form-select"
                         id="assignmentEquipment"
                         name="equipmentType"
                         value={assignmentForm.equipmentType}
@@ -458,17 +435,24 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Equipment</option>
-                        {equipmentOptions.map(equipment => (
-                          <option key={equipment} value={equipment}>{equipment}</option>
+                        {equipmentOptions.map((equipment) => (
+                          <option key={equipment} value={equipment}>
+                            {equipment}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="assignmentQuantity" className="form-label">Quantity</label>
-                      <input 
-                        type="number" 
-                        className="form-control" 
+                      <label
+                        htmlFor="assignmentQuantity"
+                        className="form-label"
+                      >
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
                         id="assignmentQuantity"
                         name="quantity"
                         value={assignmentForm.quantity}
@@ -477,12 +461,14 @@ const LogisticsOfficer = () => {
                         required
                       />
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="assignedTo" className="form-label">Assigned To</label>
-                      <input 
-                        type="text" 
-                        className="form-control" 
+                      <label htmlFor="assignedTo" className="form-label">
+                        Assigned To
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
                         id="assignedTo"
                         name="assignedTo"
                         value={assignmentForm.assignedTo}
@@ -492,10 +478,10 @@ const LogisticsOfficer = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-3">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="btn btn-warning"
                       disabled={loading}
                     >
@@ -517,9 +503,11 @@ const LogisticsOfficer = () => {
                 <form onSubmit={handleExpenditureSubmit}>
                   <div className="row g-3">
                     <div className="col-md-3">
-                      <label htmlFor="expenditureBase" className="form-label">Base</label>
-                      <select 
-                        className="form-select" 
+                      <label htmlFor="expenditureBase" className="form-label">
+                        Base
+                      </label>
+                      <select
+                        className="form-select"
                         id="expenditureBase"
                         name="base"
                         value={expenditureForm.base}
@@ -527,16 +515,23 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Base</option>
-                        {baseOptions.map(base => (
-                          <option key={base} value={base}>{base}</option>
+                        {baseOptions.map((base) => (
+                          <option key={base} value={base}>
+                            {base}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="expenditureEquipment" className="form-label">Equipment Type</label>
-                      <select 
-                        className="form-select" 
+                      <label
+                        htmlFor="expenditureEquipment"
+                        className="form-label"
+                      >
+                        Equipment Type
+                      </label>
+                      <select
+                        className="form-select"
                         id="expenditureEquipment"
                         name="equipmentType"
                         value={expenditureForm.equipmentType}
@@ -544,17 +539,24 @@ const LogisticsOfficer = () => {
                         required
                       >
                         <option value="">Select Equipment</option>
-                        {equipmentOptions.map(equipment => (
-                          <option key={equipment} value={equipment}>{equipment}</option>
+                        {equipmentOptions.map((equipment) => (
+                          <option key={equipment} value={equipment}>
+                            {equipment}
+                          </option>
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="expenditureQuantity" className="form-label">Quantity</label>
-                      <input 
-                        type="number" 
-                        className="form-control" 
+                      <label
+                        htmlFor="expenditureQuantity"
+                        className="form-label"
+                      >
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
                         id="expenditureQuantity"
                         name="quantity"
                         value={expenditureForm.quantity}
@@ -563,12 +565,14 @@ const LogisticsOfficer = () => {
                         required
                       />
                     </div>
-                    
+
                     <div className="col-md-3">
-                      <label htmlFor="reason" className="form-label">Reason</label>
-                      <input 
-                        type="text" 
-                        className="form-control" 
+                      <label htmlFor="reason" className="form-label">
+                        Reason
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
                         id="reason"
                         name="reason"
                         value={expenditureForm.reason}
@@ -578,10 +582,10 @@ const LogisticsOfficer = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-3">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="btn btn-danger"
                       disabled={loading}
                     >

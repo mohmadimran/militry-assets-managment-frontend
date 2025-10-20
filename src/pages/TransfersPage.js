@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { transferItems } from "../api/Api";
+import {baseOptions,equipmentOptions} from "../constant/Options"
 
 const TransfersPage = () => {
   const [transfers, setTransfers] = useState([]);
@@ -11,9 +12,7 @@ const TransfersPage = () => {
     equipmentType: ""
   });
 
-  const baseOptions = ["Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
-
+  
   useEffect(() => {
     fetchTransfers();
   }, []);

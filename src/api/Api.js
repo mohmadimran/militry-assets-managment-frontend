@@ -19,12 +19,19 @@ API.interceptors.request.use(
 export const registerUser = (userData) => API.post('/api/auth/register', userData);
 export const loginUser = (userData) => API.post('/api/auth/login', userData);
 
-// Employee
+// dashbord api
 export const commonDashbordApi = (params) => API.get('/api/dashboard', { params });
-
+// admin module api
 export const purchaseItem = (params)=> API.get("/api/purchases",{params});
 export const transferItems = (params)=> API.get("/api/transfers",{params})
 export const assignedItems = (params)=> API.get("/api/assignments",{params})
 export const expendituresItems = (params)=> API.get("/api/expenditures",{params})
+
+// logistic officer api
+
+export const createPurchase = (data)=> API.post("/api/purchases", data)
+export const createTransfer = (data)=> API.post("/api/transfers", data)
+export const createAssignment = (data)=> API.post("/api/assignments", data)
+export const createExpendature = (data)=> API.post("/api/expenditures", data)
 
 export default API;

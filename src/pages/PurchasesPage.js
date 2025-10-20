@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { purchaseItem } from "../api/Api";
+import {baseOptions,equipmentOptions} from "../constant/Options"
 
 const PurchasesPage = () => {
   const [purchases, setPurchases] = useState([]);
@@ -12,14 +13,7 @@ const PurchasesPage = () => {
     dateTo: "",
   });
 
-  const baseOptions = [
-    "Base A",
-    "Base B",
-    "Base C",
-    "Headquarters",
-  ];
-  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
-
+  
   
   const fetchPurchases = async (filterParams = {}) => {
     try {

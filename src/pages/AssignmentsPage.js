@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { assignedItems } from "../api/Api";
+import {baseOptions,equipmentOptions} from "../constant/Options"
 
 const AssignmentsPage = () => {
   const [assignments, setAssignments] = useState([]);
@@ -11,9 +12,7 @@ const AssignmentsPage = () => {
     assignedTo: ""
   });
 
-  const baseOptions = ["Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
-
+  
   useEffect(() => {
     fetchAssignments();
   }, []);

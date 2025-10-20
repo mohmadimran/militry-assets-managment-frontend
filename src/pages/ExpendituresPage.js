@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { expendituresItems } from "../api/Api";
+import {baseOptions,equipmentOptions} from "../constant/Options"
 
 const ExpendituresPage = () => {
   const [expenditures, setExpenditures] = useState([]);
@@ -11,9 +12,7 @@ const ExpendituresPage = () => {
     reason: ""
   });
 
-  const baseOptions = [ "Base A", "Base B", "Base C", "Headquarters"];
-  const equipmentOptions = ["Rifle", "Vehicles", "Ammunition"];
-
+  
   useEffect(() => {
     fetchExpenditures();
   }, []);
