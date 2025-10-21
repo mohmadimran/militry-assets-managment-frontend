@@ -34,4 +34,7 @@ export const createTransfer = (data)=> API.post("/api/transfers", data)
 export const createAssignment = (data)=> API.post("/api/assignments", data)
 export const createExpendature = (data)=> API.post("/api/expenditures", data)
 
+// base commander
+export const getTransferItems = (params)=> API.get("/api/transfers",{params})
+export const getDashbordTransferItem = (params)=> API.get("/api/dashboard",{params})
 export default API;

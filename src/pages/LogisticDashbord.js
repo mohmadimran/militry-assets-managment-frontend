@@ -153,7 +153,7 @@ const LogisticsOfficer = () => {
           {/* Message Alert */}
           {message && (
             <div
-              className="alert  alert-dismissible fade show"
+              className="alert  alert-dismissible fade show border"
             >
               {message}
               <button

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getTransferItems,getDashbordTransferItem } from "../api/Api";
+import {equipmentOptions} from "../constant/Options"
 
 const BaseCommanderDashboard = () => {
   const [transfers, setTransfers] = useState([]);
@@ -18,33 +20,14 @@ const BaseCommanderDashboard = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
-  const userBase = localStorage.getItem("userBase") || "Base A"; // Get from user data
+  const userBase = localStorage.getItem("userBase") || "Base A"; 
 
-  const equipmentOptions = ["All Types", "Rifle", "Vehicles", "Ammunition", "Communication", "Protective Gear"];
 
   // Fetch transfers for the commander's base
   const fetchTransfers = async (filterParams = {}) => {
     try {
-      const queryParams = new URLSearchParams();
-      Object.keys(filterParams).forEach(key => {
-        if (filterParams[key]) {
-          queryParams.append(key, filterParams[key]);
-        }
-      });
-
-      const url = `http://localhost:3001/api/transfers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch transfers");
-      
-      const data = await response.json();
+     const response = await getTransferItems(filterParams) 
+      const data = response.data;
       // Filter transfers to show only those related to commander's base
       const baseTransfers = data.filter(transfer => 
         transfer.fromBase === userBase || transfer.toBase === userBase
@@ -58,28 +41,8 @@ const BaseCommanderDashboard = () => {
   // Fetch dashboard data for the commander's base
   const fetchDashboardData = async (filterParams = {}) => {
     try {
-      const baseFilter = { base: userBase, ...filterParams };
-      const queryParams = new URLSearchParams();
-      Object.keys(baseFilter).forEach(key => {
-        if (baseFilter[key]) {
-          queryParams.append(key, baseFilter[key]);
-        }
-      });
-
-      const url = `http://localhost:3001/api/dashboard${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch dashboard data");
-      
-      const data = await response.json();
-      setDashboardData(data);
+     const response = await getDashbordTransferItem(filterParams);
+      setDashboardData(response.data);
     } catch (err) {
       setError(err.message);
     } finally {
