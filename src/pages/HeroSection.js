@@ -8,7 +8,7 @@ const HeroSection = () => {
         <div className="row min-vh-100 align-items-center justify-content-center">
           <div className="col-12 text-center">
             {/* Main Heading */}
-            <h1 className="display-3 fw-bold mb-4">
+            <h1 className="display-3 fw-bold mb-4 px-5">
               Welcome to Military Assets Management System
             </h1>
             
